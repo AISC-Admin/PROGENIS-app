@@ -8,9 +8,16 @@ declare global {
   var __progenisSchemaReady: Promise<void> | undefined;
 }
 
+export class ConfigError extends Error {}
+
+/** Neon (Vercel) fournit DATABASE_URL ; Supabase / Vercel Postgres fournissent POSTGRES_URL. */
+export function databaseUrl() {
+  return process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL || "";
+}
+
 function createClient() {
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error("DATABASE_URL manquant : configurez la base de données (voir README).");
+  const url = databaseUrl();
+  if (!url) throw new ConfigError("Base de données non configurée : la variable DATABASE_URL est absente dans Vercel.");
   const isLocal = /localhost|127\.0\.0\.1/.test(url);
   return postgres(url, {
     ssl: isLocal ? false : "require",

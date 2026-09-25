@@ -2,7 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import { createHmac, randomInt } from "node:crypto";
-import { db } from "./db";
+import { ConfigError, db } from "./db";
 
 export type Role = "manager" | "editeur" | "visionneur";
 export type User = {
@@ -20,7 +20,8 @@ const SESSION_DAYS = 30;
 
 function secret() {
   const s = process.env.AUTH_SECRET;
-  if (!s || s.length < 16) throw new Error("AUTH_SECRET manquant ou trop court (16 caractères minimum).");
+  if (!s || s.length < 16)
+    throw new ConfigError("La variable AUTH_SECRET est absente ou trop courte (16 caractères minimum) dans Vercel.");
   return s;
 }
 

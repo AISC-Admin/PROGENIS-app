@@ -118,3 +118,9 @@ Coordonnées et textes de la société : `lib/brand.ts`. Couleurs : variables CS
 - Sur mobile, le glisser-déposer est remplacé par le menu « Colonne » dans le détail d'une carte.
 - Les messages supprimés laissent une trace dans l'historique ; un sujet complet ne peut être supprimé que par le manager.
 - Enregistrement vocal : le navigateur demande l'autorisation du micro (HTTPS requis — c'est le cas sur Vercel).
+
+## En cas de problème de connexion
+
+Ouvrez `https://<votre-site>/api/health` : la page indique quelles variables manquent dans Vercel
+(sans jamais afficher leur valeur) et si la base de données répond. Après toute modification des variables,
+relancez un déploiement (**Deployments → Redeploy**) : Vercel ne les applique qu'au déploiement suivant.

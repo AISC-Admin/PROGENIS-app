@@ -1,6 +1,7 @@
 import "server-only";
 import { NextResponse } from "next/server";
 import { HttpError } from "./auth";
+import { explainError } from "./diagnose";
 
 /** Enveloppe les route handlers : convertit les erreurs en réponses JSON propres. */
 export function handler<A extends unknown[]>(fn: (...args: A) => Promise<unknown>) {
@@ -12,7 +13,7 @@ export function handler<A extends unknown[]>(fn: (...args: A) => Promise<unknown
     } catch (e) {
       if (e instanceof HttpError) return NextResponse.json({ error: e.message }, { status: e.status });
       console.error(e);
-      return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+      return NextResponse.json({ error: explainError(e) }, { status: 500 });
     }
   };
 }

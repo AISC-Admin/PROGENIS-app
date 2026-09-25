@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { explainError } from "@/lib/diagnose";
 import { db } from "@/lib/db";
 import { createSessionCookie, hashCode, logActivity, normalizeCode, randomColor, type User } from "@/lib/auth";
 
@@ -53,6 +54,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, user: { id: user.id, name: user.name, role: user.role } });
   } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    return NextResponse.json({ error: explainError(e) }, { status: 500 });
   }
 }

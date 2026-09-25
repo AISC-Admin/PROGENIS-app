@@ -1,0 +1,256 @@
+@import "tailwindcss";
+
+/* ───────── Thème Progenis Biosystems (repris du site officiel) ───────── */
+:root {
+  --amber: #b8792a;
+  --amber-tint: #f2e3c8;
+  --ink: #151b13;
+  --ink-soft: #4b5245;
+  --line: #d8d2bd;
+  --moss: #3f6b3a;
+  --moss-deep: #2c4d29;
+  --moss-tint: #e4ecdd;
+  --paper: #f5f2e9;
+  --paper-2: #ffffff;
+  --paper-3: #ece7d8;
+  --danger: #b42318;
+  --danger-tint: #fbe4e1;
+  --header-bg: #22391f;
+  --header-ink: #eef2e7;
+  --header-soft: #a9c19c;
+  --shadow: 0 18px 40px -22px rgba(21, 27, 19, 0.35);
+  --shadow-sm: 0 2px 6px -2px rgba(21, 27, 19, 0.18);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --amber: #d9a04a;
+    --amber-tint: #2a2213;
+    --ink: #eef2e7;
+    --ink-soft: #a9b39c;
+    --line: #2a342a;
+    --moss: #7fb96a;
+    --moss-deep: #5c9450;
+    --moss-tint: #1b2a1a;
+    --paper: #0c110d;
+    --paper-2: #131a13;
+    --paper-3: #1a2218;
+    --danger: #f97066;
+    --danger-tint: #3a1614;
+    --header-bg: #0a0f09;
+    --header-ink: #eef2e7;
+    --header-soft: #a9b39c;
+    --shadow: 0 18px 44px -20px rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --amber: #d9a04a;
+  --amber-tint: #2a2213;
+  --ink: #eef2e7;
+  --ink-soft: #a9b39c;
+  --line: #2a342a;
+  --moss: #7fb96a;
+  --moss-deep: #5c9450;
+  --moss-tint: #1b2a1a;
+  --paper: #0c110d;
+  --paper-2: #131a13;
+  --paper-3: #1a2218;
+  --danger: #f97066;
+  --danger-tint: #3a1614;
+  --header-bg: #0a0f09;
+  --header-ink: #eef2e7;
+  --header-soft: #a9b39c;
+  --shadow: 0 18px 44px -20px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-moss: var(--moss);
+  --color-moss-deep: var(--moss-deep);
+  --color-moss-tint: var(--moss-tint);
+  --color-amber: var(--amber);
+  --color-amber-tint: var(--amber-tint);
+  --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+@layer base {
+html,
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+.serif {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+::selection {
+  background: var(--moss);
+  color: var(--paper);
+}
+
+}
+
+@layer components {
+/* Libellé « eyebrow » façon site : mono, capitales, espacé */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--moss);
+}
+
+/* Logo : le symbole est appliqué en masque pour prendre la couleur du thème */
+.logo-mark {
+  display: inline-block;
+  background: currentColor;
+  -webkit-mask: url("/brand/logo-mark.png") center / contain no-repeat;
+  mask: url("/brand/logo-mark.png") center / contain no-repeat;
+  aspect-ratio: 160 / 147;
+}
+
+/* Boutons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--moss-deep);
+  color: #fdfdf8;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--moss);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.btn-ghost:hover:not(:disabled) {
+  border-color: var(--moss);
+  color: var(--moss);
+}
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--line);
+}
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger-tint);
+  border-color: var(--danger);
+}
+.btn-sm {
+  padding: 0.3rem 0.6rem;
+  font-size: 11px;
+}
+
+/* Champs */
+.field {
+  width: 100%;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.55rem 0.7rem;
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field:focus {
+  border-color: var(--moss);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--moss) 22%, transparent);
+}
+.field::placeholder {
+  color: color-mix(in srgb, var(--ink-soft) 70%, transparent);
+}
+label.lbl {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.3rem;
+}
+
+.card {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+/* Barre de défilement discrète pour le tableau */
+.board-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.fade-in {
+  animation: fade 0.18s ease-out;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pulse-rec {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.rec-dot {
+  animation: pulse-rec 1s infinite;
+}
+
+.prose-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+}
+}

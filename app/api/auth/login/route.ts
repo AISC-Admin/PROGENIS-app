@@ -9,6 +9,19 @@ export async function POST(req: Request) {
     if (code.length < 4) return NextResponse.json({ error: "Code d'accès requis." }, { status: 400 });
 
     const sql = await db();
+    const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || req.headers.get("x-real-ip") || "inconnu";
+
+    // Anti-essais en série : 8 échecs max par adresse IP sur 15 minutes, 50 au total sur 15 minutes.
+    const [{ mine, total }] = await sql<{ mine: number; total: number }[]>`
+      SELECT count(*) FILTER (WHERE ip = ${ip})::int AS mine, count(*)::int AS total
+      FROM login_failures WHERE created_at > now() - interval '15 minutes'`;
+    if (mine >= 8 || total >= 50) {
+      return NextResponse.json(
+        { error: "Trop de tentatives incorrectes. Réessayez dans 15 minutes." },
+        { status: 429 },
+      );
+    }
+
     const hash = hashCode(code);
     let rows = await sql<User[]>`
       SELECT id, name, email, role, color, active, session_version FROM users WHERE code_hash = ${hash}`;
@@ -28,6 +41,8 @@ export async function POST(req: Request) {
 
     const user = rows[0];
     if (!user || !user.active) {
+      await sql`INSERT INTO login_failures (ip) VALUES (${ip})`;
+      await sql`DELETE FROM login_failures WHERE created_at < now() - interval '1 day'`;
       await new Promise((r) => setTimeout(r, 600)); // ralentit les essais en série
       return NextResponse.json({ error: "Code invalide ou compte désactivé." }, { status: 401 });
     }

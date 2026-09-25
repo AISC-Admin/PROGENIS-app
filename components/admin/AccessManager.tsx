@@ -77,9 +77,9 @@ export default function AccessManager() {
       </div>
 
       <div className="mb-6 rounded-lg border border-amber/40 bg-amber-tint px-4 py-3 text-sm">
-        <strong>Sécurité :</strong> le premier compte manager est créé avec le code de démarrage défini dans Vercel
-        (<code className="font-mono text-xs">MANAGER_BOOTSTRAP_CODE</code>). Cliquez sur « Nouveau code » sur votre propre ligne pour le
-        remplacer par un code personnel.
+        <strong>Sécurité :</strong> le premier compte manager se connecte avec le code défini dans Vercel
+        (<code className="font-mono text-xs">MANAGER_BOOTSTRAP_CODE</code>). Vous pouvez le garder ou le remplacer à tout moment avec
+        « Nouveau code » sur votre ligne. Après 8 codes erronés, une adresse est bloquée 15 minutes.
       </div>
 
       <div className="grid sm:grid-cols-3 gap-3 mb-6">

@@ -16,7 +16,7 @@ Application web collaborative de **OÜ Progenis Biosystems**, aux couleurs du si
 - **Éditeur** : crée et modifie cartes, pastilles, messages, fichiers, projet.
 - **Visionneur** : consultation uniquement.
 
-Les changements de rôle et les désactivations s'appliquent **immédiatement**. « Nouveau code » invalide l'ancien code et ferme les sessions ouvertes de la personne. Les codes sont stockés chiffrés (HMAC) : ils ne sont affichés qu'une fois, au moment de leur création.
+Les changements de rôle et les désactivations s'appliquent **immédiatement**. Après 8 codes erronés, une adresse IP est bloquée 15 minutes (et toutes les connexions le sont au-delà de 50 échecs en 15 minutes). « Nouveau code » invalide l'ancien code et ferme les sessions ouvertes de la personne. Les codes sont stockés chiffrés (HMAC) : ils ne sont affichés qu'une fois, au moment de leur création.
 
 ## Pile technique (recommandée)
 
@@ -75,7 +75,7 @@ Projet → **Settings → Environment Variables** :
 **Deployments → Redeploy**. Ouvrez l'URL, saisissez `MANAGER_BOOTSTRAP_CODE` : le compte **Manager** est créé.
 Puis, dans **Accès** :
 
-1. cliquez sur « **Nouveau code** » sur votre propre ligne pour remplacer le code de démarrage par un code personnel ;
+1. ce code devient votre code manager permanent ; vous pouvez le remplacer quand vous voulez avec « **Nouveau code** » sur votre propre ligne ;
 2. renommez votre compte ;
 3. ajoutez les participants (Éditeur ou Visionneur) et envoyez-leur l'invitation (bouton « Copier l'invitation »).
 

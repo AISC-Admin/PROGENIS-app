@@ -120,6 +120,14 @@ CREATE TABLE IF NOT EXISTS project_documents (
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Tentatives de connexion échouées (protection contre les essais en série)
+CREATE TABLE IF NOT EXISTS login_failures (
+  id         SERIAL PRIMARY KEY,
+  ip         TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS login_failures_ip_idx ON login_failures(ip, created_at);
+
 CREATE TABLE IF NOT EXISTS activity_log (
   id         SERIAL PRIMARY KEY,
   user_id    INTEGER REFERENCES users(id) ON DELETE SET NULL,

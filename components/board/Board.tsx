@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { api, Avatar, ReadOnlyNotice, useApp, usePolling } from "../client";
 import { type Board as BoardData, type Column, type Task, isOverdue, PRIORITY_META, stageColor, fmtDue } from "./helpers";
 import CardDetail from "./CardDetail";
+import { CardChecklist, ChecklistBadge, ProgressRing } from "./Subtasks";
 import LabelManager from "./LabelManager";
 
 export default function Board() {
@@ -425,6 +426,7 @@ function CardView({
 }) {
   const { toast } = useApp();
   const [busy, setBusy] = useState(false);
+  const [showChecklist, setShowChecklist] = useState(true);
   const mine = t.assignees.some((a) => a.id === meId);
   const last = t.progress[t.progress.length - 1];
   const overdue = isOverdue(t);
@@ -468,10 +470,23 @@ function CardView({
           ))}
         </div>
       )}
-      <h3 className={`font-sans text-[14px] font-medium leading-snug ${t.done ? "line-through text-ink-soft" : ""}`}>{t.title}</h3>
+      <div className="flex items-start gap-2">
+        <span className="mt-[1px]">
+          <ProgressRing task={t} size={18} />
+        </span>
+        <h3 className={`font-sans text-[14px] font-medium leading-snug flex-1 ${t.done ? "line-through text-ink-soft" : ""}`}>{t.title}</h3>
+      </div>
 
-      {(t.due_date || t.priority === "haute" || t.priority === "urgente" || t.description) && (
+      {(t.due_date || t.priority === "haute" || t.priority === "urgente" || t.description || t.subtasks.length > 0) && (
         <div className="flex flex-wrap items-center gap-1.5 mt-2 text-[11px]">
+          <ChecklistBadge
+            task={t}
+            active={showChecklist}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowChecklist(!showChecklist);
+            }}
+          />
           {t.due_date && (
             <span
               className={`font-mono px-1.5 py-[1px] rounded ${
@@ -494,6 +509,8 @@ function CardView({
           )}
         </div>
       )}
+
+      {showChecklist && <CardChecklist task={t} reload={reload} />}
 
       {last && (
         <div className="mt-2.5">

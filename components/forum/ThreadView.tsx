@@ -3,8 +3,10 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, fmtDate, useApp, usePolling } from "../client";
+import { THREAD_CATEGORIES } from "@/lib/shared";
 import Composer from "./Composer";
 import MessageView, { type Message } from "./MessageView";
+import { CategoryChip, CategoryPicker } from "./CategoryPicker";
 
 type Thread = { id: number; title: string; category: string; pinned: boolean; created_by: number | null; created_by_name: string | null; created_at: string };
 
@@ -16,6 +18,8 @@ export default function ThreadView({ id }: { id: number }) {
   const lastCount = useRef(0);
   const [renaming, setRenaming] = useState(false);
   const [title, setTitle] = useState("");
+  const [changingCat, setChangingCat] = useState(false);
+  const [cat, setCat] = useState("");
 
   // Défilement automatique à l'arrivée de nouveaux messages (sauf si on vise une ancre #mID)
   useEffect(() => {
@@ -49,10 +53,39 @@ export default function ThreadView({ id }: { id: number }) {
         ← Tous les sujets
       </Link>
       <header className="mt-3 mb-6 pb-5 border-b border-line">
-        <p className="eyebrow mb-1">
-          {thread.category}
-          {thread.pinned && " · épinglé"}
-        </p>
+        <div className="flex items-center gap-2 mb-2">
+          {changingCat && canManage ? (
+            <div className="flex-1">
+              <CategoryPicker
+                value={cat}
+                onChange={(v) => {
+                  setCat(v);
+                  if (v.trim()) {
+                    patch({ category: v });
+                    if (THREAD_CATEGORIES.some((c) => c.name === v)) setChangingCat(false);
+                  }
+                }}
+              />
+              <button className="text-xs text-ink-soft mt-1" onClick={() => setChangingCat(false)}>
+                Fermer
+              </button>
+            </div>
+          ) : (
+            <>
+              <button
+                disabled={!canManage}
+                onClick={() => {
+                  setCat(thread.category);
+                  setChangingCat(true);
+                }}
+                title={canManage ? "Changer de catégorie" : undefined}
+              >
+                <CategoryChip name={thread.category} />
+              </button>
+              {thread.pinned && <span className="eyebrow">· épinglé</span>}
+            </>
+          )}
+        </div>
         {renaming ? (
           <input
             className="field serif !text-2xl"

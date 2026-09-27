@@ -22,7 +22,13 @@ export const GET = handler(async () => {
           SELECT json_agg(json_build_object('id', p.id, 'stage', p.stage, 'percent', p.percent, 'note', p.note,
             'created_at', p.created_at, 'user_id', p.user_id, 'user_name', pu.name, 'user_color', pu.color) ORDER BY p.created_at)
           FROM task_progress p LEFT JOIN users pu ON pu.id = p.user_id WHERE p.task_id = t.id
-        ), '[]') AS progress
+        ), '[]') AS progress,
+        COALESCE((
+          SELECT json_agg(json_build_object('id', s.id, 'title', s.title, 'position', s.position, 'color', s.color,
+            'done', s.done, 'done_at', s.done_at, 'done_by_name', du.name, 'note', s.note,
+            'pastilles', s.pastilles, 'attachments', s.attachments) ORDER BY s.position, s.id)
+          FROM subtasks s LEFT JOIN users du ON du.id = s.done_by WHERE s.task_id = t.id
+        ), '[]') AS subtasks
       FROM tasks t LEFT JOIN users cu ON cu.id = t.created_by
       ORDER BY t.position, t.id`,
   ]);

@@ -67,6 +67,24 @@ CREATE TABLE IF NOT EXISTS task_progress (
 );
 CREATE INDEX IF NOT EXISTS task_progress_task_idx ON task_progress(task_id, created_at);
 
+-- Sous-tâches (check-list) : pastilles de liens, fichiers justificatifs, validation
+CREATE TABLE IF NOT EXISTS subtasks (
+  id          SERIAL PRIMARY KEY,
+  task_id     INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  title       TEXT NOT NULL,
+  position    DOUBLE PRECISION NOT NULL DEFAULT 0,
+  color       TEXT,
+  done        BOOLEAN NOT NULL DEFAULT FALSE,
+  done_by     INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  done_at     TIMESTAMPTZ,
+  note        TEXT NOT NULL DEFAULT '',
+  pastilles   JSONB NOT NULL DEFAULT '[]'::jsonb,
+  attachments JSONB NOT NULL DEFAULT '[]'::jsonb,
+  created_by  INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS subtasks_task_idx ON subtasks(task_id, position);
+
 CREATE TABLE IF NOT EXISTS threads (
   id            SERIAL PRIMARY KEY,
   title         TEXT NOT NULL,

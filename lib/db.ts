@@ -12,7 +12,18 @@ export class ConfigError extends Error {}
 
 /** Neon (Vercel) fournit DATABASE_URL ; Supabase / Vercel Postgres fournissent POSTGRES_URL. */
 export function databaseUrl() {
-  return process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL || "";
+  const direct = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL;
+  if (direct) return direct;
+  // L'intégration Neon peut ajouter un préfixe (ex. STORAGE_DATABASE_URL, NEON_DATABASE_URL)
+  const key = databaseUrlCandidates()[0];
+  return key ? process.env[key] ?? "" : "";
+}
+
+/** Noms des variables qui ressemblent à une adresse de base Postgres. */
+export function databaseUrlCandidates() {
+  return Object.keys(process.env)
+    .filter((k) => /(DATABASE_URL|POSTGRES_URL)$/.test(k) && /^postgres(ql)?:\/\//.test(process.env[k] ?? ""))
+    .sort((a, b) => a.length - b.length);
 }
 
 function createClient() {

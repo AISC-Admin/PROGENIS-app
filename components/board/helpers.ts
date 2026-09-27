@@ -11,6 +11,30 @@ export type Progress = {
   user_name: string | null;
   user_color: string | null;
 };
+export type Pastille = { id: string; kind: "source" | "reponse" | "info"; label: string; url: string };
+export type Subtask = {
+  id: number;
+  title: string;
+  position: number;
+  color: string | null;
+  done: boolean;
+  done_at: string | null;
+  done_by_name: string | null;
+  note: string;
+  pastilles: Pastille[];
+  attachments: { url: string; name: string; content_type: string; size: number }[];
+};
+
+/** Types de pastilles de sous-tâche. */
+export const PASTILLE_KINDS: Record<Pastille["kind"], { label: string; color: string }> = {
+  source: { label: "Où l'obtenir", color: "#1d4ed8" },
+  reponse: { label: "Réponse", color: "#5c9450" },
+  info: { label: "Info", color: "#b8792a" },
+};
+
+/** Couleurs de point pour distinguer les sous-tâches (comme les pastilles Trello). */
+export const SUBTASK_COLORS = ["#3b82f6", "#22c55e", "#a855f7", "#eab308", "#ef4444", "#f97316", "#14b8a6", "#64748b"];
+
 export type Task = {
   id: number;
   column_id: number;
@@ -26,6 +50,7 @@ export type Task = {
   label_ids: number[];
   assignees: Assignee[];
   progress: Progress[];
+  subtasks: Subtask[];
 };
 export type Board = { columns: Column[]; labels: Label[]; tasks: Task[] };
 

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { api, Avatar, fmtDate, Modal, timeAgo, useApp } from "../client";
 import { type Board, type Task, PRIORITY_META, STAGES, stageColor, toDateInput } from "./helpers";
+import { ProgressRing, SubtaskSection } from "./Subtasks";
 
 type Member = { id: number; name: string; color: string; role: string; active: boolean };
 
@@ -102,6 +103,8 @@ export default function CardDetail({
           <p className="eyebrow mb-1">
             Carte #{t.id} · dans «&nbsp;{column?.title}&nbsp;»{t.done && " · terminée"}
           </p>
+          <div className="flex items-center gap-3">
+          <ProgressRing task={t} size={30} showLabel />
           {canEdit ? (
             <input
               className="w-full bg-transparent serif text-2xl outline-none border-b border-transparent focus:border-moss"
@@ -113,6 +116,7 @@ export default function CardDetail({
           ) : (
             <h3 className="text-2xl">{t.title}</h3>
           )}
+          </div>
         </div>
       }
     >
@@ -134,6 +138,8 @@ export default function CardDetail({
               <p className="prose-text text-sm">{t.description || <span className="text-ink-soft">Aucune description.</span>}</p>
             )}
           </div>
+
+          <SubtaskSection task={t} reload={reload} />
 
           <div>
             <label className="lbl">Pastilles d&apos;avancement</label>

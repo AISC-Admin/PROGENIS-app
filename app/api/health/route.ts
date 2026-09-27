@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { databaseUrl, sqlClient } from "@/lib/db";
+import { databaseUrl, databaseUrlCandidates, sqlClient } from "@/lib/db";
 import { explainError } from "@/lib/diagnose";
 
 export const dynamic = "force-dynamic";
@@ -22,5 +22,14 @@ export async function GET() {
     }
   }
   const ok = checks.DATABASE_URL === "présente" && checks.AUTH_SECRET === "présente" && database === "connexion OK";
-  return NextResponse.json({ ok, variables: checks, database });
+  const found = databaseUrlCandidates();
+  const conseil = !databaseUrl()
+    ? "Aucune base reliée : Vercel → Storage → Create Database → Neon → Connect Project, puis Deployments → Redeploy."
+    : ok
+      ? "Tout est prêt."
+      : "Vérifiez la base de données puis redéployez.";
+  return NextResponse.json(
+    { ok, variables: checks, variables_base_detectees: found, database, conseil },
+    { headers: { "Content-Type": "application/json; charset=utf-8" } },
+  );
 }

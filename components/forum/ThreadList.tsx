@@ -6,6 +6,8 @@ import { api, Avatar, Modal, ReadOnlyNotice, timeAgo, useApp, usePolling } from 
 import { AI_PROVIDERS } from "@/lib/shared";
 import Composer from "./Composer";
 import { AiBadge } from "./AiBadge";
+import { CategoryChip, CategoryPicker } from "./CategoryPicker";
+import { THREAD_CATEGORIES } from "@/lib/shared";
 
 type Thread = {
   id: number;
@@ -78,7 +80,13 @@ function Threads({ canEdit }: { canEdit: boolean }) {
   const [filter, setFilter] = useState<string | null>(null);
   const [q, setQ] = useState("");
 
-  const categories = useMemo(() => Array.from(new Set((data ?? []).map((t) => t.category))).sort(), [data]);
+  const used = useMemo(() => Array.from(new Set((data ?? []).map((t) => t.category))).sort(), [data]);
+  // Catégories fixes toujours affichées, puis les catégories personnalisées déjà utilisées
+  const categories = useMemo(() => {
+    const fixed = THREAD_CATEGORIES.map((c) => c.name);
+    return [...fixed, ...used.filter((c) => !fixed.includes(c))];
+  }, [used]);
+  const countBy = (c: string) => (data ?? []).filter((t) => t.category === c).length;
   const list = (data ?? []).filter(
     (t) => (!filter || t.category === filter) && (!q || t.title.toLowerCase().includes(q.toLowerCase())),
   );
@@ -93,10 +101,10 @@ function Threads({ canEdit }: { canEdit: boolean }) {
         {categories.map((c) => (
           <button
             key={c}
-            className={`text-xs px-2.5 py-1 rounded-full border ${filter === c ? "bg-moss-tint text-moss border-moss/40" : "border-line text-ink-soft"}`}
+            className={`rounded-full transition-opacity ${filter && filter !== c ? "opacity-45 hover:opacity-80" : ""}`}
             onClick={() => setFilter(filter === c ? null : c)}
           >
-            {c}
+            <CategoryChip name={c} count={countBy(c)} />
           </button>
         ))}
         {canEdit && (
@@ -125,7 +133,7 @@ function Threads({ canEdit }: { canEdit: boolean }) {
                   <span className="font-medium truncate">{t.title}</span>
                 </div>
                 <div className="text-xs text-ink-soft mt-0.5 flex flex-wrap gap-x-3">
-                  <span className="text-moss">{t.category}</span>
+                  <CategoryChip name={t.category} small />
                   <span>par {t.created_by_name ?? "—"}</span>
                   <span>
                     dernier message {t.last_author ? `de ${t.last_author} ` : ""}
@@ -144,19 +152,14 @@ function Threads({ canEdit }: { canEdit: boolean }) {
       </ul>
 
       <Modal open={open} onClose={() => setOpen(false)} title="Nouveau sujet de réflexion" wide>
-        <div className="grid sm:grid-cols-[1fr_200px] gap-3 mb-3">
+        <div className="grid gap-3 mb-3">
           <div>
             <label className="lbl">Titre</label>
             <input className="field" placeholder="Ex. : Protocole de sevrage en PhytoBox" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
           </div>
           <div>
             <label className="lbl">Catégorie</label>
-            <input className="field" list="cats" value={category} onChange={(e) => setCategory(e.target.value)} />
-            <datalist id="cats">
-              {["Général", "Laboratoire", "Terrain Afrique", "Financement", "Juridique", "Recherche IA", ...categories].map((c) => (
-                <option key={c} value={c} />
-              ))}
-            </datalist>
+            <CategoryPicker value={category} onChange={setCategory} extra={used} />
           </div>
         </div>
         <Composer
@@ -164,6 +167,7 @@ function Threads({ canEdit }: { canEdit: boolean }) {
           placeholder="Premier message : contexte, question, pistes…"
           onSubmit={async (p) => {
             if (!title.trim()) throw new Error("Donnez un titre au sujet.");
+            if (!category.trim()) throw new Error("Choisissez une catégorie.");
             const r = await api<{ thread: { id: number } }>("/api/threads", "POST", { title, category, ...p });
             setOpen(false);
             setTitle("");

@@ -53,3 +53,18 @@ export const ROLE_LABELS: Record<string, string> = {
 };
 
 export const MAX_UPLOAD_BYTES = 500 * 1024 * 1024; // 500 Mo (vidéos)
+
+/** Catégories de l'onglet Réflexion (couleur associée). */
+export const THREAD_CATEGORIES: { name: string; color: string }[] = [
+  { name: "Général", color: "#8a9a80" },
+  { name: "Financière", color: "#d18b2c" },
+  { name: "Technique", color: "#3b82f6" },
+  { name: "Logistique", color: "#14b8a6" },
+  { name: "Légalité", color: "#8b5cf6" },
+  { name: "Commercial", color: "#e11d48" },
+  { name: "Scientifique", color: "#5c9450" },
+];
+
+export function categoryColor(name: string) {
+  return THREAD_CATEGORIES.find((c) => c.name.toLowerCase() === name.toLowerCase())?.color ?? "#64748b";
+}
